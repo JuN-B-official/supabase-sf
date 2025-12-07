@@ -113,6 +113,48 @@ supabase-sf/
 
 ---
 
+## Versioning & Upstream Policy
+
+This repo is an **orchestration layer** on top of the official Supabase Docker images, not a fork of the core services.
+
+### Currently Tested Against
+
+| Component | Image Tag |
+|-----------|-----------|
+| PostgreSQL | `supabase/postgres:15.8.1.085` |
+| Studio | `supabase/studio:2025.11.26-sha-8f096b5` |
+| Auth (GoTrue) | `supabase/gotrue:v2.183.0` |
+| Realtime | `supabase/realtime:v2.65.3` |
+| Storage | `supabase/storage-api:v1.32.0` |
+
+See `docker-compose.yml` for the complete list of pinned image tags.
+
+### Update Cadence
+
+- We track **stable Supabase releases**, not every single patch.
+- When Supabase publishes notable updates (breaking changes, security patches, or new Docker tags):
+  1. Image tags in `docker-compose.yml` are updated
+  2. Scripts are verified against a fresh instance
+  3. This repo is tagged with matching version (e.g. `v2.5.x-selfhost`)
+
+### Compatibility Guarantees
+
+- Each release is tested **only against the pinned image tags** in `docker-compose.yml`
+- Manually changing image tags may cause init/rotation scripts to fail
+- For newer Supabase versions, please **open an issue or PR** for proper testing
+
+### Contributions
+
+**If you upgrade images and everything works:**
+- Open a PR with:
+  - Updated tags in `docker-compose.yml`
+  - Notes from running `init-instance.sh`, `check-health.sh`, and rotation scripts
+
+**If something breaks with newer images:**
+- Open an issue with logs and your `.env` (with secrets redacted)
+
+---
+
 ## Scripts Workflow
 
 | Script | Purpose | Downtime | Side Effects |
