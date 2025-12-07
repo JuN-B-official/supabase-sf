@@ -3,7 +3,7 @@
 # Rotate VAULT_ENC_KEY
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# ⚠️  CRITICAL WARNING: This requires a FULL RESET of Supavisor data!
+# CRITICAL WARNING: This requires a FULL RESET of Supavisor data!
 #
 # The VAULT_ENC_KEY is used by Supavisor to encrypt tenant data.
 # Changing it means all encrypted data becomes unreadable.
@@ -44,7 +44,7 @@ generate_key() {
 main() {
     echo ""
     log_error "═══════════════════════════════════════════════════════════════"
-    log_error "⚠️  CRITICAL: VAULT_ENC_KEY Rotation"
+    log_error "CRITICAL: VAULT_ENC_KEY Rotation"
     log_error "═══════════════════════════════════════════════════════════════"
     echo ""
     log_warn "This operation will:"
@@ -53,8 +53,8 @@ main() {
     log_warn "  3. Generate a new VAULT_ENC_KEY"
     log_warn "  4. Reinitialize Supavisor"
     echo ""
-    log_warn "⚠️  Connection pooler configuration will be RESET!"
-    log_warn "⚠️  You may need to reconfigure pooler settings."
+    log_warn "WARNING: Connection pooler configuration will be RESET!"
+    log_warn "WARNING: You may need to reconfigure pooler settings."
     echo ""
     
     read -p "Are you ABSOLUTELY sure? Type 'ROTATE' to confirm: " -r
@@ -99,8 +99,8 @@ main() {
     docker compose up -d
     
     echo ""
-    log_info "✅ VAULT_ENC_KEY rotation complete!"
-    log_warn "⚠️  The connection pooler has been reinitialized."
+    log_info "VAULT_ENC_KEY rotation complete!"
+    log_warn "WARNING: The connection pooler has been reinitialized."
     log_info "Run './scripts/check-health.sh' to verify all services are healthy."
 }
 

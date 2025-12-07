@@ -26,7 +26,7 @@ log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 main() {
     echo ""
     log_error "═══════════════════════════════════════════════════════════════"
-    log_error "⚠️  COMPLETE RESET - ALL DATA WILL BE DELETED"
+    log_error "COMPLETE RESET - ALL DATA WILL BE DELETED"
     log_error "═══════════════════════════════════════════════════════════════"
     echo ""
     
@@ -51,7 +51,7 @@ main() {
     mkdir -p "$PROJECT_ROOT/volumes/storage"
     
     echo ""
-    log_info "✅ Reset complete!"
+    log_info "Reset complete!"
     log_info "Run './scripts/init-instance.sh' to reinitialize."
 }
 

@@ -60,7 +60,7 @@ main() {
         local SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
         
         echo ""
-        log_info "✅ Backup completed successfully!"
+        log_info "Backup completed successfully!"
         log_info "File: $BACKUP_FILE"
         log_info "Size: $SIZE"
         echo ""

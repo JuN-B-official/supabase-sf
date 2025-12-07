@@ -204,8 +204,8 @@ main() {
     echo ""
     
     if $updated; then
-        log_info "✅ All secrets have been generated!"
-        log_warn "⚠️  These secrets are now IMMUTABLE. See docs/KEY_ROTATION.md for details."
+        log_info "All secrets have been generated!"
+        log_warn "WARNING: These secrets are now IMMUTABLE. See docs/KEY_ROTATION.md for details."
     else
         log_info "All secrets already configured."
     fi
@@ -216,7 +216,7 @@ main() {
     docker compose up -d
     
     echo ""
-    log_info "✅ Supabase is starting!"
+    log_info "Supabase is starting!"
     log_info "Dashboard: http://localhost:8000"
     log_info "Run './scripts/check-health.sh' to verify all services are healthy."
 }

@@ -23,9 +23,9 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
 
-log_ok() { echo -e "${GREEN}✅${NC} $1"; }
-log_warn() { echo -e "${YELLOW}⚠️${NC} $1"; }
-log_fail() { echo -e "${RED}❌${NC} $1"; }
+log_ok() { echo -e "${GREEN}[OK]${NC} $1"; }
+log_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+log_fail() { echo -e "${RED}[FAIL]${NC} $1"; }
 
 get_env_value() {
     local key="$1"
@@ -160,7 +160,7 @@ main() {
     echo "═══════════════════════════════════════════════════════════════"
     echo ""
     
-    echo "📦 Container Status (Core Services)"
+    echo "[CONTAINERS] Core Services"
     echo "───────────────────────────────────────────────────────────────"
     check_container "supabase-db"
     check_container "supabase-kong"
@@ -174,14 +174,14 @@ main() {
     check_container "supabase-studio"
     
     echo ""
-    echo "📦 Container Status (Optional Services - profile: full)"
+    echo "[CONTAINERS] Optional Services (profile: full)"
     echo "───────────────────────────────────────────────────────────────"
     check_container "supabase-analytics" "true"
     check_container "supabase-imgproxy" "true"
     check_container "supabase-vector" "true"
     
     echo ""
-    echo "🌐 Endpoint Checks"
+    echo "[ENDPOINTS] Health Checks"
     echo "───────────────────────────────────────────────────────────────"
     check_endpoint "Kong Gateway" "http://localhost:8000"
     check_endpoint "Auth" "http://localhost:8000/auth/v1/health"
@@ -189,7 +189,7 @@ main() {
     check_endpoint "Storage" "http://localhost:8000/storage/v1/status"
     
     echo ""
-    echo "🔑 Secret Synchronization"
+    echo "[SECRETS] Synchronization Check"
     echo "───────────────────────────────────────────────────────────────"
     check_secret_sync
     

@@ -10,7 +10,7 @@
 # 4. Updates .env file
 # 5. Restarts all services
 #
-# ⚠️  WARNING: This will invalidate ALL existing user sessions!
+# WARNING: This will invalidate ALL existing user sessions!
 #
 # Usage: ./scripts/rotate-jwt-secret.sh [new-secret]
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -69,8 +69,8 @@ main() {
     log_info "JWT_SECRET Rotation"
     echo ""
     
-    log_warn "⚠️  WARNING: This will invalidate ALL existing user sessions!"
-    log_warn "⚠️  All users will need to log in again."
+    log_warn "WARNING: This will invalidate ALL existing user sessions!"
+    log_warn "WARNING: All users will need to log in again."
     echo ""
     read -p "Continue? (y/N): " -n 1 -r
     echo
@@ -121,8 +121,8 @@ main() {
     docker compose up -d
     
     echo ""
-    log_info "✅ JWT_SECRET rotation complete!"
-    log_warn "⚠️  All users must log in again."
+    log_info "JWT_SECRET rotation complete!"
+    log_warn "WARNING: All users must log in again."
     log_info ""
     log_info "New keys for your application:"
     log_info "ANON_KEY: ${NEW_ANON:0:50}..."

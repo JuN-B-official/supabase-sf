@@ -87,7 +87,7 @@ main() {
     docker compose restart auth rest storage meta functions supavisor realtime
     
     echo ""
-    log_info "✅ POSTGRES_PASSWORD rotation complete!"
+    log_info "POSTGRES_PASSWORD rotation complete!"
     log_info "Run './scripts/check-health.sh' to verify all services are healthy."
 }
 
