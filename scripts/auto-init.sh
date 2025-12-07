@@ -92,6 +92,17 @@ main() {
     local updated=false
     local jwt_updated=false
     
+    # Generate unique INSTANCE_NAME if default
+    local instance=$(get_env_value "INSTANCE_NAME")
+    if [[ "$instance" == "supabase" ]] || [[ -z "$instance" ]]; then
+        # Generate short unique ID (6 chars)
+        local unique_id=$(openssl rand -hex 3)
+        local new_instance="supabase-${unique_id}"
+        sed -i "s|^INSTANCE_NAME=.*|INSTANCE_NAME=$new_instance|" "$ENV_FILE"
+        log_info "Generated INSTANCE_NAME: $new_instance"
+        updated=true
+    fi
+    
     # Generate POSTGRES_PASSWORD
     local pg_pass=$(get_env_value "POSTGRES_PASSWORD")
     if is_placeholder "$pg_pass"; then
@@ -140,7 +151,7 @@ main() {
     
     # Generate DASHBOARD_PASSWORD
     local dash=$(get_env_value "DASHBOARD_PASSWORD")
-    if [[ "$dash" == "this_password_is_insecure_and_should_be_updated" ]] || is_placeholder "$dash"; then
+    if [[ -z "$dash" ]] || [[ "$dash" == "this_password_is_insecure_and_should_be_updated" ]] || is_placeholder "$dash"; then
         local new_dash=$(generate_password)
         sed -i "s|^DASHBOARD_PASSWORD=.*|DASHBOARD_PASSWORD=$new_dash|" "$ENV_FILE"
         log_info "Generated DASHBOARD_PASSWORD"

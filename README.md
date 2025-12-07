@@ -37,16 +37,30 @@ docker compose up -d   # Auto-generates secrets on first run
 
 ---
 
-## Immutable Secrets
+## Environment Variables
+
+### Freely Changeable (restart required)
+
+| Variable | Description |
+|----------|-------------|
+| `SITE_URL`, `API_EXTERNAL_URL`, `SUPABASE_PUBLIC_URL` | Public URLs |
+| `STUDIO_DEFAULT_ORGANIZATION`, `STUDIO_DEFAULT_PROJECT` | Studio display names |
+| `DASHBOARD_USERNAME`, `DASHBOARD_PASSWORD` | Dashboard login |
+| `KONG_HTTP_PORT`, `KONG_HTTPS_PORT` | API Gateway ports |
+| Email/Phone settings, `OPENAI_API_KEY`, etc. | All other settings |
+
+### Immutable After Deployment
 
 > [!CAUTION]
-> These values are stored internally at first deployment.  
-> Changing `.env` alone will **break your system**.
+> These values are stored internally. Changing `.env` alone will **break your system**.  
+> Use rotation scripts or deploy a new instance.
 
-| Secret | Where Stored | Use Rotation Script |
-|--------|--------------|---------------------|
+| Variable | Where Stored | How to Change |
+|----------|--------------|---------------|
+| `INSTANCE_NAME` | Container names | New instance required |
 | `POSTGRES_PASSWORD` | 5 DB roles | `rotate-postgres-password.sh` |
-| `JWT_SECRET` | DB + tokens | `rotate-jwt-secret.sh` |
+| `JWT_SECRET` | DB settings | `rotate-jwt-secret.sh` |
+| `ANON_KEY`, `SERVICE_ROLE_KEY` | JWT tokens | `rotate-jwt-secret.sh` |
 | `VAULT_ENC_KEY` | Supavisor | `rotate-vault-key.sh` |
 
 See [docs/secrets-lifecycle.md](./docs/secrets-lifecycle.md) for rotation procedures.
