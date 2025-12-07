@@ -1,85 +1,112 @@
 # Supabase Self-Hosted
 
-Docker Compose setup for deploying the complete Supabase stack on your local machine or own server.
+Production-ready Docker Compose setup for self-hosting Supabase with automated secret management.
 
 > [!CAUTION]
-> **This repository is for Self-hosted only.**  
-> If you're using [Supabase Cloud](https://supabase.com/dashboard), refer to the [official documentation](https://supabase.com/docs) instead.
+> **For self-hosted deployments only.**  
+> Using [Supabase Cloud](https://supabase.com/dashboard)? See the [official docs](https://supabase.com/docs).
+
+---
 
 ## Quick Start
 
 ```bash
-# 1. Clone the repository
+# Clone and start
 git clone https://github.com/your-org/supabase-sf.git
 cd supabase-sf
-
-# 2. Initialize (auto-generates secure secrets)
-./scripts/init-instance.sh
-
-# Or manually:
-# cp .env.example .env
-# (edit .env, then:)
-# docker compose up -d
+docker compose up -d   # Auto-generates secrets on first run
 ```
 
-**Access**:
-- **Studio Dashboard**: http://localhost:8000
-- **API**: http://localhost:8000
+**Access:**
+- **Dashboard**: http://localhost:8000
+- **API**: http://localhost:8000/rest/v1/
+- **MCP Connection Guide**: `docker logs supabase-mcp-guide`
+
+**Default credentials** (check `.env` after first run):
+- Username: `supabase`  
+- Password: Auto-generated (see `DASHBOARD_PASSWORD` in `.env`)
 
 ---
 
-## ⚠️ Immutable Secrets
+## Features
+
+- **Auto-initialization**: Secrets generated automatically on first deployment
+- **Key rotation scripts**: Safe rotation with --dry-run preview mode
+- **Multi-platform**: Docker CLI, EasyPanel, Portainer, Coolify, etc.
+- **MCP integration**: Built-in connection guide for Claude/Cursor
+
+---
+
+## Immutable Secrets
 
 > [!CAUTION]
-> **The following values are stored inside the system at first deployment.**  
-> Changing only `.env` after deployment will **BREAK your system**.
+> These values are stored internally at first deployment.  
+> Changing `.env` alone will **break your system**.
 
-| Key | Storage Location | Impact When Changed |
-|-----|------------------|---------------------|
-| `POSTGRES_PASSWORD` | 5 DB roles (`authenticator`, `pgbouncer`, `supabase_auth_admin`, `supabase_functions_admin`, `supabase_storage_admin`) | All service DB connections fail |
-| `JWT_SECRET` | DB setting `app.settings.jwt_secret` | Auth, REST API, Realtime JWT verification fails |
-| `VAULT_ENC_KEY` | Supavisor encrypted data | Connection pooler decryption fails |
-| `ANON_KEY` / `SERVICE_ROLE_KEY` | JWT tokens signed with `JWT_SECRET` | Tokens invalidated when JWT_SECRET changes |
+| Secret | Where Stored | Use Rotation Script |
+|--------|--------------|---------------------|
+| `POSTGRES_PASSWORD` | 5 DB roles | `rotate-postgres-password.sh` |
+| `JWT_SECRET` | DB + tokens | `rotate-jwt-secret.sh` |
+| `VAULT_ENC_KEY` | Supavisor | `rotate-vault-key.sh` |
 
-**For key rotation**: See [docs/KEY_ROTATION.md](./docs/KEY_ROTATION.md)
+See [docs/secrets-lifecycle.md](./docs/secrets-lifecycle.md) for rotation procedures.
 
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                           Kong (API Gateway)                        │
-│                         :8000 (HTTP) / :8443 (HTTPS)                │
-└─────────────────────────────────────────────────────────────────────┘
-         │              │              │              │
-         ▼              ▼              ▼              ▼
-    ┌─────────┐   ┌─────────┐   ┌─────────┐   ┌─────────┐
-    │  Auth   │   │  REST   │   │Realtime │   │ Storage │
-    │(GoTrue) │   │(PostgREST)│ │         │   │         │
-    └────┬────┘   └────┬────┘   └────┬────┘   └────┬────┘
-         │              │              │              │
-         └──────────────┴──────┬───────┴──────────────┘
-                               ▼
-                    ┌─────────────────────┐
-                    │     Supavisor       │
-                    │ (Connection Pooler) │
-                    │   :5432 / :6543     │
-                    └──────────┬──────────┘
-                               ▼
-                    ┌─────────────────────┐
-                    │     PostgreSQL      │
-                    │   (supabase/postgres)│
-                    └─────────────────────┘
+                    ┌──────────────────────────────┐
+                    │     Kong (API Gateway)       │
+                    │      :8000 / :8443           │
+                    └──────────────┬───────────────┘
+                                   │
+          ┌────────────┬───────────┼───────────┬────────────┐
+          ▼            ▼           ▼           ▼            ▼
+      ┌──────┐    ┌──────┐    ┌────────┐  ┌────────┐   ┌─────────┐
+      │ Auth │    │ REST │    │Realtime│  │Storage │   │Functions│
+      └──┬───┘    └──┬───┘    └───┬────┘  └───┬────┘   └────┬────┘
+         └───────────┴────────────┼───────────┴─────────────┘
+                                  ▼
+                    ┌──────────────────────────────┐
+                    │   Supavisor (Pooler)         │
+                    │      :5432 / :6543           │
+                    └──────────────┬───────────────┘
+                                   ▼
+                    ┌──────────────────────────────┐
+                    │        PostgreSQL            │
+                    └──────────────────────────────┘
 
-Supporting Services:
-├── Studio (Dashboard) - :3000 (internal)
-├── Edge Functions (Deno) - /functions/v1/*
-├── postgres-meta - DB management API
-├── ImgProxy - Image transformation
-├── Vector - Log collection
-└── Logflare (Analytics) - :4000
+Supporting: Studio, postgres-meta, ImgProxy, Vector, Analytics
 ```
+
+---
+
+## Scripts
+
+All rotation scripts support `--dry-run` (preview) and `--allow-destructive` (execute).
+
+| Script | Purpose | Impact |
+|--------|---------|--------|
+| `init-instance.sh` | First-time setup | Generates secrets |
+| `check-health.sh` | Verify services | Read-only |
+| `backup.sh` | Database backup | Creates SQL dump |
+| `reset.sh` | Full reset | **Deletes all data** |
+| `rotate-postgres-password.sh` | Rotate DB password | ~30s downtime |
+| `rotate-jwt-secret.sh` | Rotate JWT | **All sessions invalidated** |
+| `rotate-vault-key.sh` | Rotate Vault key | **Pooler data destroyed** |
+
+```bash
+# Preview changes first
+./scripts/rotate-jwt-secret.sh --dry-run
+
+# Execute with confirmation
+./scripts/rotate-jwt-secret.sh --allow-destructive
+```
+
+> [!WARNING]
+> Rotation scripts are for **dev/staging only**.  
+> For production, use blue/green deployment (see [docs/secrets-lifecycle.md](./docs/secrets-lifecycle.md)).
 
 ---
 
@@ -87,160 +114,65 @@ Supporting Services:
 
 ```
 supabase-sf/
-├── docker-compose.yml   # Main orchestration file
-├── .env.example         # Environment template (copy to .env)
-├── scripts/             # Operational scripts
-│   ├── init-instance.sh     # First-time setup (auto-generates secrets)
-│   ├── rotate-*.sh          # Key rotation scripts
-│   ├── check-health.sh      # Health check & secret sync validation
-│   └── reset.sh             # Full reset
-├── volumes/             # Docker volumes for data persistence
-│   ├── db/              # PostgreSQL init scripts & data
-│   ├── storage/         # File storage
-│   └── functions/       # Edge Functions
-├── supabase/            # Supabase CLI local development config
-│   ├── config.toml      # CLI configuration
-│   ├── migrations/      # User-defined DB migrations
-│   ├── functions/       # User-defined Edge Functions
-│   └── seed.sql         # Initial seed data
-└── docs/                # Documentation
+├── docker-compose.yml    # Service orchestration
+├── .env.example          # Environment template
+├── scripts/              # Init, rotation, backup, health scripts
+├── volumes/              # Persistent data (db, storage, functions)
+├── docs/                 # Documentation
+└── backups/              # Database backups (created by backup.sh)
 ```
-
-> [!NOTE]
-> **`volumes/` vs `supabase/` 차이점**:
-> - `volumes/db/`: Docker self-host 배포 시 DB 초기화에 사용되는 시스템 SQL 파일들
-> - `supabase/`: Supabase CLI 로컬 개발용 설정 (config.toml, 사용자 마이그레이션 등)
 
 ---
 
-## Versioning & Upstream Policy
+## Versioning & Upstream
 
-This repo is an **orchestration layer** on top of the official Supabase Docker images, not a fork of the core services.
+This repo is an **orchestration layer** on top of official Supabase Docker images.
 
-### Currently Tested Against
+### Tested Image Tags
 
-| Component | Image Tag |
-|-----------|-----------|
+| Service | Tag |
+|---------|-----|
 | PostgreSQL | `supabase/postgres:15.8.1.085` |
 | Studio | `supabase/studio:2025.11.26-sha-8f096b5` |
-| Auth (GoTrue) | `supabase/gotrue:v2.183.0` |
+| Auth | `supabase/gotrue:v2.183.0` |
 | Realtime | `supabase/realtime:v2.65.3` |
 | Storage | `supabase/storage-api:v1.32.0` |
 
-See `docker-compose.yml` for the complete list of pinned image tags.
+### Update Policy
 
-### Update Cadence
-
-- We track **stable Supabase releases**, not every single patch.
-- When Supabase publishes notable updates (breaking changes, security patches, or new Docker tags):
-  1. Image tags in `docker-compose.yml` are updated
-  2. Scripts are verified against a fresh instance
-  3. This repo is tagged with matching version (e.g. `v2.5.x-selfhost`)
-
-### Compatibility Guarantees
-
-- Each release is tested **only against the pinned image tags** in `docker-compose.yml`
-- Manually changing image tags may cause init/rotation scripts to fail
-- For newer Supabase versions, please **open an issue or PR** for proper testing
-
-### Contributions
-
-**If you upgrade images and everything works:**
-- Open a PR with:
-  - Updated tags in `docker-compose.yml`
-  - Notes from running `init-instance.sh`, `check-health.sh`, and rotation scripts
-
-**If something breaks with newer images:**
-- Open an issue with logs and your `.env` (with secrets redacted)
-
----
-
-## Scripts Workflow
-
-| Script | Purpose | Downtime | Side Effects |
-|--------|---------|----------|--------------|
-| `./scripts/init-instance.sh` | First-time setup | None | Generates all secrets, starts containers |
-| `./scripts/check-health.sh` | Health check | None | Read-only, validates services & secrets |
-| `./scripts/backup.sh` | Database backup | None | Creates SQL dump in `backups/` |
-| `./scripts/reset.sh` | Full reset | **Full** | ⚠️ Deletes ALL data, requires re-init |
-| `./scripts/rotate-postgres-password.sh` | Rotate DB password | ~30s | Restarts DB-connected services |
-| `./scripts/rotate-jwt-secret.sh` | Rotate JWT secret | ~1min | ⚠️ **All user sessions invalidated** |
-| `./scripts/rotate-vault-key.sh` | Rotate Vault key | ~1min | ⚠️ **Pooler data reset** |
-
-**Recommended workflow:**
-```bash
-# 1. Install
-./scripts/init-instance.sh
-
-# 2. Verify
-./scripts/check-health.sh
-
-# 3. Regular backups
-./scripts/backup.sh
-
-# 4. Key rotation (when needed)
-./scripts/rotate-postgres-password.sh  # Safe, minimal downtime
-./scripts/rotate-jwt-secret.sh         # Users must re-login
-./scripts/rotate-vault-key.sh          # Pooler reconfigured
-```
-
-For detailed key rotation procedures, see [docs/KEY_ROTATION.md](./docs/KEY_ROTATION.md).
+- We track **stable releases**, not every patch
+- Manual tag changes may break init/rotation scripts
+- Upgrades require testing → open a PR with results
 
 ---
 
 ## Configuration
 
-Key environment variables (`.env`):
-
-### Secrets (MUST change before first deployment)
+Key variables in `.env`:
 
 | Variable | Description |
 |----------|-------------|
-| `POSTGRES_PASSWORD` | PostgreSQL password |
-| `JWT_SECRET` | JWT signing key (32+ characters) |
-| `VAULT_ENC_KEY` | Supavisor encryption key (32+ characters) |
-| `ANON_KEY` | Anonymous user JWT token |
-| `SERVICE_ROLE_KEY` | Service role JWT token |
-| `DASHBOARD_USERNAME` / `DASHBOARD_PASSWORD` | Studio login credentials |
-
-### Network
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `KONG_HTTP_PORT` | 8000 | API Gateway HTTP port |
-| `KONG_HTTPS_PORT` | 8443 | API Gateway HTTPS port |
-| `SITE_URL` | http://localhost:3000 | Frontend URL |
-| `API_EXTERNAL_URL` | http://localhost:8000 | External API URL |
+| `POSTGRES_PASSWORD` | Database password |
+| `JWT_SECRET` | JWT signing key (32+ chars) |
+| `DASHBOARD_PASSWORD` | Studio login password |
+| `SITE_URL` | Your frontend URL |
+| `API_EXTERNAL_URL` | External API URL |
+| `STUDIO_DEFAULT_ORGANIZATION` | Studio org name |
+| `STUDIO_DEFAULT_PROJECT` | Studio project name |
 
 ---
 
 ## Maintenance
 
-### Update
-
 ```bash
-# 1. Check changes
-cat CHANGELOG.md
-
-# 2. Pull latest images
+# Update images
 docker compose pull
+docker compose down && docker compose up -d
 
-# 3. Restart
-docker compose down
-docker compose up -d
-```
+# Backup database
+./scripts/backup.sh
 
-### Backup
-
-```bash
-# Backup PostgreSQL data
-docker exec supabase-db pg_dumpall -U postgres > backup.sql
-```
-
-### Full Reset
-
-```bash
-# Delete all data and restart
+# Full reset (deletes all data!)
 ./scripts/reset.sh
 ```
 
@@ -248,28 +180,29 @@ docker exec supabase-db pg_dumpall -U postgres > backup.sql
 
 ## Troubleshooting
 
-### Check Service Status
-
 ```bash
+# Check status
 docker compose ps
-docker compose logs <service-name>
+
+# View logs
+docker compose logs <service>
+
+# Health check
+./scripts/check-health.sh
 ```
 
-### Common Issues
-
-| Symptom | Cause | Solution |
-|---------|-------|----------|
-| Auth service fails to start | `JWT_SECRET` mismatch | Verify DB and env values match |
-| REST API 401 error | Invalid `ANON_KEY`/`SERVICE_ROLE_KEY` | Verify tokens are signed with current `JWT_SECRET` |
-| Pooler connection fails | `POSTGRES_PASSWORD` mismatch | Check DB role passwords |
-| Studio login fails | `DASHBOARD_PASSWORD` changed | Restart Kong |
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| Auth fails to start | JWT_SECRET mismatch | Verify DB and .env match |
+| 401 API errors | Invalid API keys | Check ANON_KEY/SERVICE_ROLE_KEY |
+| Pooler connection fails | Password mismatch | Run rotation script |
 
 ---
 
 ## Links
 
-- [Self-Hosting Official Documentation](https://supabase.com/docs/guides/self-hosting/docker)
-- [GitHub Discussions (Self-Hosted)](https://github.com/orgs/supabase/discussions?discussions_q=is%3Aopen+label%3Aself-hosted)
+- [Self-Hosting Docs](https://supabase.com/docs/guides/self-hosting/docker)
+- [GitHub Discussions](https://github.com/orgs/supabase/discussions?discussions_q=is%3Aopen+label%3Aself-hosted)
 - [Discord](https://discord.supabase.com)
 
 ---
