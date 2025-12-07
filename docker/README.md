@@ -82,6 +82,21 @@ Before deploying to production, you must:
 
 See the [security section](https://supabase.com/docs/guides/self-hosting/docker#securing-your-services) in the documentation.
 
+### ⚠️ Immutable Secrets
+
+**The following secrets cannot be changed after first deployment by simply editing `.env`:**
+
+| Secret | Why Immutable |
+|--------|---------------|
+| `POSTGRES_PASSWORD` | Stored in 5 PostgreSQL roles during initialization |
+| `JWT_SECRET` | Stored in DB config (`app.settings.jwt_secret`) |
+| `VAULT_ENC_KEY` | Used by Supavisor to encrypt/decrypt data |
+| `ANON_KEY` / `SERVICE_ROLE_KEY` | JWT tokens signed with `JWT_SECRET` |
+
+Changing these values in `.env` after deployment will cause service failures because the new values won't match what's stored in the database and encrypted stores.
+
+**For key rotation procedures, see [docs/KEY_ROTATION.md](../docs/KEY_ROTATION.md).**
+
 ## License
 
 This repository is licensed under the Apache 2.0 License. See the main [Supabase repository](https://github.com/supabase/supabase) for details.
