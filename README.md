@@ -28,6 +28,25 @@ docker compose up -d   # Auto-generates secrets on first run
 
 ---
 
+## VPS Panel Deployment (Easypanel, Coolify, etc.)
+
+When deploying via Docker Compose on VPS panels, configure domain routing:
+
+| Setting | Value |
+|---------|-------|
+| **Protocol** | HTTP |
+| **Port** | 8000 |
+| **Compose Service** | `kong` |
+
+> [!TIP]
+> Environment values including dashboard credentials are displayed in container logs:
+> ```bash
+> docker logs <instance>-env-info
+> ```
+> Logs update automatically when `.env` file changes.
+
+---
+
 ## Features
 
 - **Auto-initialization**: Secrets generated automatically on first deployment
@@ -207,9 +226,11 @@ docker compose logs <service>
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
+| 502 Bad Gateway | Wrong port/service in panel | Set port to `8000`, service to `kong` |
 | Auth fails to start | JWT_SECRET mismatch | Verify DB and .env match |
 | 401 API errors | Invalid API keys | Check ANON_KEY/SERVICE_ROLE_KEY |
 | Pooler connection fails | Password mismatch | Run rotation script |
+| Cached old page | Browser cache | Use incognito mode or clear cache |
 
 ---
 

@@ -115,10 +115,24 @@ print_connection_info() {
 main() {
     wait_for_env
     
-    while true; do
-        print_connection_info
-        sleep 300  # Refresh every 5 minutes
-    done
+    # Initial print
+    print_connection_info
+    
+    # Watch for .env changes using inotify (falls back to polling if unavailable)
+    if command -v inotifywait &> /dev/null; then
+        echo "[MCP] Watching for .env changes (inotify)..."
+        while true; do
+            inotifywait -qq -e modify -e close_write "$ENV_FILE" 2>/dev/null
+            sleep 1  # Brief delay to avoid rapid updates
+            print_connection_info
+        done
+    else
+        echo "[MCP] inotifywait not available, falling back to 5-minute polling..."
+        while true; do
+            sleep 300
+            print_connection_info
+        done
+    fi
 }
 
 main

@@ -123,10 +123,24 @@ print_env_info() {
 main() {
     wait_for_env
     
-    while true; do
-        print_env_info
-        sleep 300  # Refresh every 5 minutes
-    done
+    # Initial print
+    print_env_info
+    
+    # Watch for .env changes using inotify (falls back to polling if unavailable)
+    if command -v inotifywait &> /dev/null; then
+        echo "[ENV] Watching for .env changes (inotify)..."
+        while true; do
+            inotifywait -qq -e modify -e close_write "$ENV_FILE" 2>/dev/null
+            sleep 1  # Brief delay to avoid rapid updates
+            print_env_info
+        done
+    else
+        echo "[ENV] inotifywait not available, falling back to 5-minute polling..."
+        while true; do
+            sleep 300
+            print_env_info
+        done
+    fi
 }
 
 main
