@@ -206,7 +206,7 @@ With MCP connected, your AI assistant can:
 |----------|-------|
 | **Database** | `execute_sql`, `list_tables`, `list_extensions`, `list_migrations`, `apply_migration` |
 | **Auth** | `list_users`, `get_user`, `create_user`, `delete_user`, `generate_link` |
-| **Storage** | `list_storage_buckets`, `list_files`, `upload_file`, `download_file`, `delete_file`, `create_signed_url`, `get_storage_config`, `update_storage_config` |
+| **Storage** | `create_storage_bucket` 🆕, `list_storage_buckets`, `list_files`, `upload_file`, `download_file`, `delete_file`, `create_signed_url`, `get_storage_config`, `update_storage_config` |
 | **Functions** | `list_edge_functions`, `get_edge_function`, `invoke_edge_function`, `deploy_edge_function` |
 | **Branching** | `list_branches`, `create_branch`, `delete_branch`, `merge_branch`, `reset_branch`, `rebase_branch` |
 | **Operations** | `check_health`, `backup_now`, `rotate_secret`, `get_stats`, `run_script` |
