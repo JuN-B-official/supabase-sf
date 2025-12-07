@@ -40,76 +40,78 @@ print_connection_info() {
     
     SUPABASE_URL="${SUPABASE_URL:-http://localhost:8000}"
 
-    echo ""
-    echo "================================================================================"
-    echo "                    SUPABASE MCP CONNECTION GUIDE"
-    echo "================================================================================"
-    echo ""
-    echo "Keys loaded from .env (auto-generated on first deployment)"
-    echo ""
-    echo "--------------------------------------------------------------------------------"
-    echo "CLAUDE DESKTOP / CURSOR CONFIGURATION"
-    echo "--------------------------------------------------------------------------------"
-    echo ""
-    echo "Add this to your claude_desktop_config.json or .cursor/mcp.json:"
-    echo ""
-    echo "{"
-    echo "  \"mcpServers\": {"
-    echo "    \"supabase\": {"
-    echo "      \"command\": \"npx\","
-    echo "      \"args\": ["
-    echo "        \"-y\","
-    echo "        \"@supabase/mcp-server-supabase@latest\","
-    echo "        \"--supabase-url\", \"${SUPABASE_URL}\","
-    echo "        \"--supabase-key\", \"${SERVICE_ROLE_KEY}\""
-    echo "      ]"
-    echo "    }"
-    echo "  }"
-    echo "}"
-    echo ""
-    echo "--------------------------------------------------------------------------------"
-    echo "SDK CONFIGURATION"
-    echo "--------------------------------------------------------------------------------"
-    echo ""
-    echo "JavaScript/TypeScript:"
-    echo "  npm install @supabase/supabase-js"
-    echo ""
-    echo "  import { createClient } from '@supabase/supabase-js'"
-    echo "  const supabase = createClient("
-    echo "    '${SUPABASE_URL}',"
-    echo "    '${ANON_KEY}'"
-    echo "  )"
-    echo ""
-    echo "Python:"
-    echo "  pip install supabase"
-    echo ""
-    echo "  from supabase import create_client"
-    echo "  supabase = create_client("
-    echo "    '${SUPABASE_URL}',"
-    echo "    '${ANON_KEY}'"
-    echo "  )"
-    echo ""
-    echo "--------------------------------------------------------------------------------"
-    echo "REST API (PostgREST)"
-    echo "--------------------------------------------------------------------------------"
-    echo ""
-    echo "curl '${SUPABASE_URL}/rest/v1/' \\"
-    echo "  -H \"apikey: ${ANON_KEY}\""
-    echo ""
-    echo "--------------------------------------------------------------------------------"
-    echo "ENVIRONMENT VARIABLES"
-    echo "--------------------------------------------------------------------------------"
-    echo ""
-    echo "SUPABASE_URL=${SUPABASE_URL}"
-    echo "SUPABASE_ANON_KEY=${ANON_KEY}"
-    echo "SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}"
-    echo ""
-    echo "WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security."
-    echo ""
-    echo "================================================================================"
-    echo "           Connection info refreshes every 5 minutes"
-    echo "================================================================================"
-    echo ""
+    cat <<EOF
+
+================================================================================
+                    SUPABASE MCP CONNECTION GUIDE
+================================================================================
+
+Keys loaded from .env (auto-generated on first deployment)
+
+--------------------------------------------------------------------------------
+CLAUDE DESKTOP / CURSOR CONFIGURATION
+--------------------------------------------------------------------------------
+
+Add this to your claude_desktop_config.json or .cursor/mcp.json:
+
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--supabase-url", "${SUPABASE_URL}",
+        "--supabase-key", "${SERVICE_ROLE_KEY}"
+      ]
+    }
+  }
+}
+
+--------------------------------------------------------------------------------
+SDK CONFIGURATION
+--------------------------------------------------------------------------------
+
+JavaScript/TypeScript:
+  npm install @supabase/supabase-js
+
+  import { createClient } from '@supabase/supabase-js'
+  const supabase = createClient(
+    '${SUPABASE_URL}',
+    '${ANON_KEY}'
+  )
+
+Python:
+  pip install supabase
+
+  from supabase import create_client
+  supabase = create_client(
+    '${SUPABASE_URL}',
+    '${ANON_KEY}'
+  )
+
+--------------------------------------------------------------------------------
+REST API (PostgREST)
+--------------------------------------------------------------------------------
+
+curl '${SUPABASE_URL}/rest/v1/' \\
+  -H "apikey: ${ANON_KEY}"
+
+--------------------------------------------------------------------------------
+ENVIRONMENT VARIABLES
+--------------------------------------------------------------------------------
+
+SUPABASE_URL=${SUPABASE_URL}
+SUPABASE_ANON_KEY=${ANON_KEY}
+SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}
+
+WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security.
+
+================================================================================
+           Connection info refreshes every 5 minutes
+================================================================================
+
+EOF
 }
 
 main() {

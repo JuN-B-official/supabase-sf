@@ -33,36 +33,38 @@ ANON_KEY=$(get_env_value "ANON_KEY")
 
 SUPABASE_URL="${SUPABASE_URL:-http://localhost:8000}"
 
-echo ""
-echo "================================================================================"
-echo "                    SUPABASE MCP CONNECTION GUIDE"
-echo "================================================================================"
-echo ""
-echo "Add this to your claude_desktop_config.json or .cursor/mcp.json:"
-echo ""
-echo "{"
-echo "  \"mcpServers\": {"
-echo "    \"supabase\": {"
-echo "      \"command\": \"npx\","
-echo "      \"args\": ["
-echo "        \"-y\","
-echo "        \"@supabase/mcp-server-supabase@latest\","
-echo "        \"--supabase-url\", \"${SUPABASE_URL}\","
-echo "        \"--supabase-key\", \"${SERVICE_ROLE_KEY}\""
-echo "      ]"
-echo "    }"
-echo "  }"
-echo "}"
-echo ""
-echo "--------------------------------------------------------------------------------"
-echo "ENVIRONMENT VARIABLES"
-echo "--------------------------------------------------------------------------------"
-echo ""
-echo "SUPABASE_URL=${SUPABASE_URL}"
-echo "SUPABASE_ANON_KEY=${ANON_KEY}"
-echo "SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}"
-echo ""
-echo "WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security."
-echo ""
-echo "================================================================================"
-echo ""
+cat <<EOF
+
+================================================================================
+                    SUPABASE MCP CONNECTION GUIDE
+================================================================================
+
+Add this to your claude_desktop_config.json or .cursor/mcp.json:
+
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--supabase-url", "${SUPABASE_URL}",
+        "--supabase-key", "${SERVICE_ROLE_KEY}"
+      ]
+    }
+  }
+}
+
+--------------------------------------------------------------------------------
+ENVIRONMENT VARIABLES
+--------------------------------------------------------------------------------
+
+SUPABASE_URL=${SUPABASE_URL}
+SUPABASE_ANON_KEY=${ANON_KEY}
+SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}
+
+WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security.
+
+================================================================================
+
+EOF

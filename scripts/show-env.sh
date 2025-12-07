@@ -41,47 +41,49 @@ KONG_HTTPS=$(get_env_value "KONG_HTTPS_PORT")
 ANON_KEY=$(get_env_value "ANON_KEY")
 SERVICE_KEY=$(get_env_value "SERVICE_ROLE_KEY")
 
-echo ""
-echo "================================================================================"
-echo "                    SUPABASE ENVIRONMENT INFO"
-echo "================================================================================"
-echo ""
-echo "Instance: ${INSTANCE_NAME:-supabase}"
-echo ""
-echo "--------------------------------------------------------------------------------"
-echo "DASHBOARD LOGIN"
-echo "--------------------------------------------------------------------------------"
-echo ""
-echo "  URL:      ${SUPABASE_URL:-http://localhost:8000}"
-echo "  Username: ${DASHBOARD_USER:-supabase}"
-echo "  Password: ${DASHBOARD_PASS}"
-echo ""
-echo "--------------------------------------------------------------------------------"
-echo "PROJECT INFO"
-echo "--------------------------------------------------------------------------------"
-echo ""
-echo "  Organization: ${STUDIO_ORG:-Default Organization}"
-echo "  Project:      ${STUDIO_PROJECT:-Default Project}"
-echo ""
-echo "--------------------------------------------------------------------------------"
-echo "URLS"
-echo "--------------------------------------------------------------------------------"
-echo ""
-echo "  SUPABASE_PUBLIC_URL: ${SUPABASE_URL:-http://localhost:8000}"
-echo "  SITE_URL:            ${SITE_URL:-http://localhost:3000}"
-echo "  API_EXTERNAL_URL:    ${API_URL:-http://localhost:8000}"
-echo "  KONG_HTTP_PORT:      ${KONG_HTTP:-8000}"
-echo "  KONG_HTTPS_PORT:     ${KONG_HTTPS:-8443}"
-echo ""
-echo "--------------------------------------------------------------------------------"
-echo "API KEYS (copy these for your app)"
-echo "--------------------------------------------------------------------------------"
-echo ""
-echo "ANON_KEY:"
-echo "${ANON_KEY}"
-echo ""
-echo "SERVICE_ROLE_KEY:"
-echo "${SERVICE_KEY}"
-echo ""
-echo "================================================================================"
-echo ""
+cat <<EOF
+
+================================================================================
+                    SUPABASE ENVIRONMENT INFO
+================================================================================
+
+Instance: ${INSTANCE_NAME:-supabase}
+
+--------------------------------------------------------------------------------
+DASHBOARD LOGIN
+--------------------------------------------------------------------------------
+
+  URL:      ${SUPABASE_URL:-http://localhost:8000}
+  Username: ${DASHBOARD_USER:-supabase}
+  Password: ${DASHBOARD_PASS}
+
+--------------------------------------------------------------------------------
+PROJECT INFO
+--------------------------------------------------------------------------------
+
+  Organization: ${STUDIO_ORG:-Default Organization}
+  Project:      ${STUDIO_PROJECT:-Default Project}
+
+--------------------------------------------------------------------------------
+URLS
+--------------------------------------------------------------------------------
+
+  SUPABASE_PUBLIC_URL: ${SUPABASE_URL:-http://localhost:8000}
+  SITE_URL:            ${SITE_URL:-http://localhost:3000}
+  API_EXTERNAL_URL:    ${API_URL:-http://localhost:8000}
+  KONG_HTTP_PORT:      ${KONG_HTTP:-8000}
+  KONG_HTTPS_PORT:     ${KONG_HTTPS:-8443}
+
+--------------------------------------------------------------------------------
+API KEYS (copy these for your app)
+--------------------------------------------------------------------------------
+
+ANON_KEY:
+${ANON_KEY}
+
+SERVICE_ROLE_KEY:
+${SERVICE_KEY}
+
+================================================================================
+
+EOF
