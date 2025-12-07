@@ -40,78 +40,77 @@ print_connection_info() {
     
     SUPABASE_URL="${SUPABASE_URL:-http://localhost:8000}"
 
-    cat <<EOF
-
-================================================================================
-                    SUPABASE MCP CONNECTION GUIDE
-================================================================================
-
-Keys loaded from .env (auto-generated on first deployment)
-
---------------------------------------------------------------------------------
-CLAUDE DESKTOP / CURSOR CONFIGURATION
---------------------------------------------------------------------------------
-
-Add this to your claude_desktop_config.json or .cursor/mcp.json:
-
-{
-  "mcpServers": {
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--supabase-url", "${SUPABASE_URL}",
-        "--supabase-key", "${SERVICE_ROLE_KEY}"
-      ]
-    }
-  }
-}
-
---------------------------------------------------------------------------------
-SDK CONFIGURATION
---------------------------------------------------------------------------------
-
-JavaScript/TypeScript:
-  npm install @supabase/supabase-js
-
-  import { createClient } from '@supabase/supabase-js'
-  const supabase = createClient(
-    '${SUPABASE_URL}',
-    '${ANON_KEY}'
-  )
-
-Python:
-  pip install supabase
-
-  from supabase import create_client
-  supabase = create_client(
-    '${SUPABASE_URL}',
-    '${ANON_KEY}'
-  )
-
---------------------------------------------------------------------------------
-REST API (PostgREST)
---------------------------------------------------------------------------------
-
-curl '${SUPABASE_URL}/rest/v1/' \\
-  -H "apikey: ${ANON_KEY}"
-
---------------------------------------------------------------------------------
-ENVIRONMENT VARIABLES
---------------------------------------------------------------------------------
-
-SUPABASE_URL=${SUPABASE_URL}
-SUPABASE_ANON_KEY=${ANON_KEY}
-SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}
-
-WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security.
-
-================================================================================
-           Connection info refreshes every 5 minutes
-================================================================================
-
-EOF
+    printf "\n"
+    printf "================================================================================\n"
+    printf "                    SUPABASE MCP CONNECTION GUIDE\n"
+    printf "================================================================================\n"
+    printf "\n"
+    printf "Keys loaded from .env (auto-generated on first deployment)\n"
+    printf "\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "CLAUDE DESKTOP / CURSOR CONFIGURATION\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "\n"
+    printf "Add this to your claude_desktop_config.json or .cursor/mcp.json:\n"
+    printf "\n"
+    printf "{\n"
+    printf "  \"mcpServers\": {\n"
+    printf "    \"supabase\": {\n"
+    printf "      \"command\": \"npx\",\n"
+    printf "      \"args\": [\n"
+    printf "        \"-y\",\n"
+    printf "        \"@supabase/mcp-server-supabase@latest\",\n"
+    printf "        \"--supabase-url\",\n"
+    printf "        \"%s\",\n" "$SUPABASE_URL"
+    printf "        \"--supabase-key\",\n"
+    printf "        \"%s\"\n" "$SERVICE_ROLE_KEY"
+    printf "      ]\n"
+    printf "    }\n"
+    printf "  }\n"
+    printf "}\n"
+    printf "\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "SDK CONFIGURATION\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "\n"
+    printf "JavaScript/TypeScript:\n"
+    printf "  npm install @supabase/supabase-js\n"
+    printf "\n"
+    printf "  import { createClient } from '@supabase/supabase-js'\n"
+    printf "  const supabase = createClient(\n"
+    printf "    '%s',\n" "$SUPABASE_URL"
+    printf "    '<ANON_KEY>'\n"
+    printf "  )\n"
+    printf "\n"
+    printf "Python:\n"
+    printf "  pip install supabase\n"
+    printf "\n"
+    printf "  from supabase import create_client\n"
+    printf "  supabase = create_client(\n"
+    printf "    '%s',\n" "$SUPABASE_URL"
+    printf "    '<ANON_KEY>'\n"
+    printf "  )\n"
+    printf "\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "REST API (PostgREST)\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "\n"
+    printf "curl '%s/rest/v1/' \\\\\n" "$SUPABASE_URL"
+    printf "  -H \"apikey: <ANON_KEY>\"\n"
+    printf "\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "ENVIRONMENT VARIABLES\n"
+    printf "--------------------------------------------------------------------------------\n"
+    printf "\n"
+    printf "SUPABASE_URL=\n%s\n\n" "$SUPABASE_URL"
+    printf "SUPABASE_ANON_KEY=\n%s\n\n" "$ANON_KEY"
+    printf "SUPABASE_SERVICE_ROLE_KEY=\n%s\n\n" "$SERVICE_ROLE_KEY"
+    printf "WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security.\n"
+    printf "\n"
+    printf "================================================================================\n"
+    printf "           Connection info refreshes every 5 minutes\n"
+    printf "================================================================================\n"
+    printf "\n"
 }
 
 main() {

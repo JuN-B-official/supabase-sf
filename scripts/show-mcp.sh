@@ -33,38 +33,37 @@ ANON_KEY=$(get_env_value "ANON_KEY")
 
 SUPABASE_URL="${SUPABASE_URL:-http://localhost:8000}"
 
-cat <<EOF
-
-================================================================================
-                    SUPABASE MCP CONNECTION GUIDE
-================================================================================
-
-Add this to your claude_desktop_config.json or .cursor/mcp.json:
-
-{
-  "mcpServers": {
-    "supabase": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@supabase/mcp-server-supabase@latest",
-        "--supabase-url", "${SUPABASE_URL}",
-        "--supabase-key", "${SERVICE_ROLE_KEY}"
-      ]
-    }
-  }
-}
-
---------------------------------------------------------------------------------
-ENVIRONMENT VARIABLES
---------------------------------------------------------------------------------
-
-SUPABASE_URL=${SUPABASE_URL}
-SUPABASE_ANON_KEY=${ANON_KEY}
-SUPABASE_SERVICE_ROLE_KEY=${SERVICE_ROLE_KEY}
-
-WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security.
-
-================================================================================
-
-EOF
+printf "\n"
+printf "================================================================================\n"
+printf "                    SUPABASE MCP CONNECTION GUIDE\n"
+printf "================================================================================\n"
+printf "\n"
+printf "Add this to your claude_desktop_config.json or .cursor/mcp.json:\n"
+printf "\n"
+printf "{\n"
+printf "  \"mcpServers\": {\n"
+printf "    \"supabase\": {\n"
+printf "      \"command\": \"npx\",\n"
+printf "      \"args\": [\n"
+printf "        \"-y\",\n"
+printf "        \"@supabase/mcp-server-supabase@latest\",\n"
+printf "        \"--supabase-url\",\n"
+printf "        \"%s\",\n" "$SUPABASE_URL"
+printf "        \"--supabase-key\",\n"
+printf "        \"%s\"\n" "$SERVICE_ROLE_KEY"
+printf "      ]\n"
+printf "    }\n"
+printf "  }\n"
+printf "}\n"
+printf "\n"
+printf "--------------------------------------------------------------------------------\n"
+printf "ENVIRONMENT VARIABLES\n"
+printf "--------------------------------------------------------------------------------\n"
+printf "\n"
+printf "SUPABASE_URL=\n%s\n\n" "$SUPABASE_URL"
+printf "SUPABASE_ANON_KEY=\n%s\n\n" "$ANON_KEY"
+printf "SUPABASE_SERVICE_ROLE_KEY=\n%s\n\n" "$SERVICE_ROLE_KEY"
+printf "WARNING: Keep SERVICE_ROLE_KEY secret! It bypasses Row Level Security.\n"
+printf "\n"
+printf "================================================================================\n"
+printf "\n"
