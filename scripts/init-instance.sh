@@ -108,6 +108,16 @@ main() {
     local updated=false
     local jwt_updated=false
     
+    # Generate unique INSTANCE_NAME if placeholder
+    local current_instance=$(get_env_value "INSTANCE_NAME")
+    if [[ "$current_instance" == "supabase" ]] || [[ "$current_instance" == "supabase-{auto}" ]] || [[ -z "$current_instance" ]]; then
+        local unique_id=$(openssl rand -hex 3)
+        local new_instance="supabase-${unique_id}"
+        sed -i "s|^INSTANCE_NAME=.*|INSTANCE_NAME=$new_instance|" "$ENV_FILE"
+        log_info "Generated unique INSTANCE_NAME: $new_instance"
+        updated=true
+    fi
+    
     # Generate POSTGRES_PASSWORD if placeholder
     local current_pg_pass=$(get_env_value "POSTGRES_PASSWORD")
     if is_placeholder "$current_pg_pass"; then
