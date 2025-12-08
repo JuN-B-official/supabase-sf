@@ -59,7 +59,7 @@ generate_jwt_token() {
 # Check if value is a placeholder
 is_placeholder() {
     local value="$1"
-    [[ "$value" == your-* ]] || [[ "$value" == *"super-secret"* ]] || [[ -z "$value" ]]
+    [[ "$value" == your-* ]] || [[ "$value" == *"super-secret"* ]] || [[ "$value" == "auto-generated" ]] || [[ -z "$value" ]]
 }
 
 # Get env value
@@ -94,7 +94,7 @@ main() {
     
     # Generate unique INSTANCE_NAME if default
     local instance=$(get_env_value "INSTANCE_NAME")
-    if [[ "$instance" == "supabase" ]] || [[ -z "$instance" ]]; then
+    if [[ "$instance" == "supabase" ]] || [[ "$instance" == "supabase-{auto}" ]] || [[ -z "$instance" ]]; then
         # Generate short unique ID (6 chars)
         local unique_id=$(openssl rand -hex 3)
         local new_instance="supabase-${unique_id}"

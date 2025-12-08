@@ -73,6 +73,7 @@ When deploying via Docker Compose on VPS panels, configure domain routing:
 - **Key rotation scripts**: Safe rotation with --dry-run preview mode
 - **Multi-platform**: Docker CLI, EasyPanel, Portainer, Coolify, etc.
 - **MCP integration**: Built-in connection guide for Claude/Cursor
+- **Security hardening**: Caddy SSL, rate limiting, port restrictions ([docs/security.md](./docs/security.md))
 
 ---
 

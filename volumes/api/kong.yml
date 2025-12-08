@@ -83,6 +83,11 @@ services:
           allow:
             - admin
             - anon
+      - name: rate-limiting
+        config:
+          minute: 20
+          hour: 200
+          policy: local
 
   ## Secure REST routes
   - name: rest-v1
@@ -104,6 +109,11 @@ services:
           allow:
             - admin
             - anon
+      - name: rate-limiting
+        config:
+          minute: 100
+          hour: 1000
+          policy: local
 
   ## Secure GraphQL routes
   - name: graphql-v1
@@ -281,3 +291,8 @@ services:
       - name: basic-auth
         config:
           hide_credentials: true
+      - name: rate-limiting
+        config:
+          minute: 30
+          hour: 300
+          policy: local

@@ -1,0 +1,38 @@
+# Caddy + Supabase SSL Configuration
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.caddy.yml up -d
+#
+# Requirements:
+#   - Set DOMAIN in .env (e.g., supabase.yourdomain.com)
+#   - Port 80 and 443 must be open
+#   - DNS must point to your server
+
+services:
+  caddy:
+    container_name: ${INSTANCE_NAME:-supabase}-caddy
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./volumes/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+    depends_on:
+      kong:
+        condition: service_started
+
+  # Override Kong to not expose ports externally (Caddy handles this)
+  kong:
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:8000:8000/tcp"
+      - "${BIND_ADDRESS:-127.0.0.1}:8443:8443/tcp"
+
+volumes:
+  caddy_data:
+  caddy_config:

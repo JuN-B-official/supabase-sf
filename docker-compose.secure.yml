@@ -1,0 +1,21 @@
+# Supabase Secure Ports Configuration
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.secure.yml up -d
+#
+# This overlay restricts database and analytics ports to localhost only.
+# External access is blocked; services are only reachable through Kong gateway.
+#
+# Set BIND_ADDRESS in .env to customize (default: 127.0.0.1)
+
+services:
+  # Restrict Supavisor (Pooler) ports to localhost
+  supavisor:
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
+      - "${BIND_ADDRESS:-127.0.0.1}:${POOLER_PROXY_PORT_TRANSACTION:-6543}:6543"
+
+  # Restrict Analytics port to localhost
+  analytics:
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:4000:4000"
