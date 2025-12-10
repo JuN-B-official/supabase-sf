@@ -85,6 +85,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-studio
     image: supabase/studio:2025.11.26-sha-8f096b5
     restart: unless-stopped
+    env_file:
+      - .env
     healthcheck:
       test:
         [
@@ -136,6 +138,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-kong
     image: kong:2.8.1
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - ${KONG_HTTP_PORT}:8000/tcp
       - ${KONG_HTTPS_PORT}:8443/tcp
@@ -166,6 +170,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-auth
     image: supabase/gotrue:v2.183.0
     restart: unless-stopped
+    env_file:
+      - .env
     healthcheck:
       test:
         [
@@ -249,6 +255,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-rest
     image: postgrest/postgrest:v13.0.7
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -271,6 +279,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}.supabase-realtime
     image: supabase/realtime:v2.65.3
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -316,6 +326,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-storage
     image: supabase/storage-api:v1.32.0
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
       - ./volumes/storage:/var/lib/storage:z
     healthcheck:
@@ -377,6 +389,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-meta
     image: supabase/postgres-meta:v0.93.1
     restart: unless-stopped
+    env_file:
+      - .env
     depends_on:
       db:
         # Disable this if you are using an external Postgres database
@@ -396,6 +410,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-edge-functions
     image: supabase/edge-runtime:v1.69.25
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
       - ./volumes/functions:/home/deno/functions:Z
     depends_on:
@@ -415,6 +431,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-analytics
     image: supabase/logflare:1.26.13
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - ${ANALYTICS_PORT:-4000}:4000
     # Uncomment to use Big Query backend for analytics
@@ -458,6 +476,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-db
     image: supabase/postgres:15.8.1.085
     restart: unless-stopped
+    env_file:
+      - .env
     volumes:
       - ./volumes/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql:Z
       # Must be superuser to create event trigger
@@ -535,6 +555,8 @@ services:
     container_name: ${INSTANCE_NAME:-supabase}-pooler
     image: supabase/supavisor:2.7.4
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
       - ${POSTGRES_PORT}:5432
       - ${POOLER_PROXY_PORT_TRANSACTION}:6543
