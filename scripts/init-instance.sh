@@ -77,7 +77,7 @@ generate_jwt_token() {
 is_placeholder() {
     local value="$1"
     case "$value" in
-        "your-"*|"CHANGE"*|"change"*|"placeholder"*|"example"*|"")
+        "your-"*|"CHANGE"*|"change"*|"placeholder"*|"example"*|"auto-generated"|"")
             return 0
             ;;
         *)
@@ -124,6 +124,16 @@ main() {
         local new_pass=$(generate_password)
         sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=$new_pass|" "$ENV_FILE"
         log_info "Generated new POSTGRES_PASSWORD"
+        
+        # Clean existing DB data to prevent password mismatch
+        # (old DB data would have different password, causing auth failures)
+        local db_data_dir="$PROJECT_ROOT/volumes/db/data"
+        if [[ -d "$db_data_dir" ]] && [[ "$(ls -A "$db_data_dir" 2>/dev/null)" ]]; then
+            log_warn "Cleaning existing DB data to match new password..."
+            rm -rf "$db_data_dir"/*
+            log_info "DB data cleaned - fresh database will be created"
+        fi
+        
         updated=true
     fi
     

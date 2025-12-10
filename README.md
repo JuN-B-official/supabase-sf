@@ -116,6 +116,9 @@ See [docs/security.md](./docs/security.md) for firewall setup and customization.
 - **MCP integration**: Built-in connection guide for Claude/Cursor
 - **Security hardening**: Caddy SSL, rate limiting, port restrictions ([docs/security.md](./docs/security.md))
 
+> [!WARNING]
+> **Single Instance Per Server**: Due to Supabase Realtime's architecture, only ONE Supabase instance can run per server. The `realtime-dev.supabase-realtime` container name is hardcoded and will conflict if you try to run multiple instances. For multi-instance setups, use separate VPS/VMs.
+
 ---
 
 ## Environment Variables
@@ -370,6 +373,8 @@ docker compose logs <service>
 | 401 API errors          | Invalid API keys            | Check ANON_KEY/SERVICE_ROLE_KEY           |
 | Pooler connection fails | Password mismatch           | Run rotation script                       |
 | Cached old page         | Browser cache               | Use incognito mode or clear cache         |
+| Realtime container conflict | Multiple instances on same server | Use separate VPS (see Features section) |
+| DB password auth failed | Old DB data with new password | Delete `volumes/db/data` and restart |
 
 ---
 

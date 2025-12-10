@@ -109,6 +109,15 @@ main() {
         local new_pass=$(generate_password)
         sed -i "s|^POSTGRES_PASSWORD=.*|POSTGRES_PASSWORD=$new_pass|" "$ENV_FILE"
         log_info "Generated POSTGRES_PASSWORD"
+        
+        # Clean existing DB data to prevent password mismatch
+        # (old DB data would have different password, causing auth failures)
+        if [[ -d "/app/volumes/db/data" ]] && [[ "$(ls -A /app/volumes/db/data 2>/dev/null)" ]]; then
+            log_warn "Cleaning existing DB data to match new password..."
+            rm -rf /app/volumes/db/data/*
+            log_info "DB data cleaned - fresh database will be created"
+        fi
+        
         updated=true
     fi
     

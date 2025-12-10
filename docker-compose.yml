@@ -264,7 +264,10 @@ services:
     command: ["postgrest"]
 
   realtime:
-    # This container name looks inconsistent but is correct because realtime constructs tenant id by parsing the subdomain
+    # IMPORTANT: This container name is hardcoded because Supabase Realtime
+    # parses the tenant ID from the subdomain. This means only ONE Supabase
+    # instance per server is supported due to this container name conflict.
+    # For multi-instance setups, use separate VPS/VMs.
     container_name: realtime-dev.supabase-realtime
     image: supabase/realtime:v2.65.3
     restart: unless-stopped
@@ -413,7 +416,7 @@ services:
     image: supabase/logflare:1.26.13
     restart: unless-stopped
     ports:
-      - 4000:4000
+      - ${ANALYTICS_PORT:-4000}:4000
     # Uncomment to use Big Query backend for analytics
     # volumes:
     #   - type: bind
